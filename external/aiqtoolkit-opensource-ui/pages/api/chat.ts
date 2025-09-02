@@ -12,6 +12,8 @@ export const config = {
 
 const handler = async (req: Request): Promise<Response> => {
 
+  console.log('handler-req', req);
+
   // extract the request body
   let {
     chatCompletionURL = '',
@@ -21,10 +23,10 @@ const handler = async (req: Request): Promise<Response> => {
     }
   } = (await req.json()) as ChatBody;
 
-  try {    
+  try {
     let payload
     // for generate end point the request schema is {input_message: "user question"}
-    if(chatCompletionURL.includes('generate')) {
+    if (chatCompletionURL.includes('generate')) {
       if (messages?.length > 0 && messages[messages.length - 1]?.role === 'user') {
         payload = {
           input_message: messages[messages.length - 1]?.content ?? ''
@@ -66,14 +68,14 @@ const handler = async (req: Request): Promise<Response> => {
     if (!response.ok) {
       let errorMessage = await response.text();
 
-      if(errorMessage.includes('<!DOCTYPE html>')) {
-        if(errorMessage.includes('404')) {
+      if (errorMessage.includes('<!DOCTYPE html>')) {
+        if (errorMessage.includes('404')) {
           errorMessage = '404 - Page not found'
         }
         else {
           errorMessage = 'HTML response received from server, which cannot be parsed.'
         }
-        
+
       }
       console.log('aiq - received error response from server', errorMessage);
       // For other errors, return a Response object with the error message
@@ -104,7 +106,7 @@ const handler = async (req: Request): Promise<Response> => {
               buffer += decoder.decode(value, { stream: true });
               const lines = buffer.split('\n');
               buffer = lines.pop() || '';
-
+              debugger
               for (const line of lines) {
                 if (line.startsWith('data: ')) {
                   const data = line.slice(5);
@@ -126,7 +128,7 @@ const handler = async (req: Request): Promise<Response> => {
                 // TODO - fix or remove this and use websocket to support intermediate data
                 if (line.startsWith('intermediate_data: ')) {
 
-                  if(additionalProps.enableIntermediateSteps === true) {
+                  if (additionalProps.enableIntermediateSteps === true) {
                     const data = line.split('intermediate_data: ')[1];
                     if (data.trim() === '[DONE]') {
                       controller.close();
@@ -153,7 +155,7 @@ const handler = async (req: Request): Promise<Response> => {
                         intermediate_parent_id,
                         content: {
                           name: name,
-                          payload: details,          
+                          payload: details,
                         },
                         time_stamp,
                         index: counter++
@@ -192,13 +194,13 @@ const handler = async (req: Request): Promise<Response> => {
       console.log('aiq - processing non streaming response');
       const data = await response.text();
       let parsed = null;
-    
+
       try {
         parsed = JSON.parse(data);
       } catch (error) {
         console.log('aiq - error parsing JSON response', error);
       }
-    
+
       // Safely extract content with proper checks
       const content =
         parsed?.output || // Check for `output`
@@ -207,7 +209,7 @@ const handler = async (req: Request): Promise<Response> => {
         (Array.isArray(parsed?.choices) ? parsed.choices[0]?.message?.content : null) || // Safely check `choices[0]`
         parsed || // Fallback to the entire `parsed` object
         data; // Final fallback to raw `data`
-    
+
       if (content) {
         console.log('aiq - response processing is completed');
         return new Response(content);
@@ -216,7 +218,7 @@ const handler = async (req: Request): Promise<Response> => {
         return new Response(response.body || data);
       }
     }
-    
+
   } catch (error) {
     console.log('error - while making request', error);
     const formattedError = `Something went wrong. Please try again. \n\n<details><summary>Details</summary>Error Message: ${error?.message || 'Unknown error'}</details>`

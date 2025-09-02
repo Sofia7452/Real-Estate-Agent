@@ -79,12 +79,12 @@ export const Chat = () => {
   const scrollTimeout = useRef(null);
 
 
-  const openModal = (data : any = {}) => {
+  const openModal = (data: any = {}) => {
     setInteractionMessage(data);
     setModalOpen(true);
   };
 
-  const handleUserInteraction = ({interactionMessage = {}, userResponse = ''} : any) => {
+  const handleUserInteraction = ({ interactionMessage = {}, userResponse = '' }: any) => {
     // todo send user input to websocket server as user response to interaction message
     // console.log("User response:", userResponse);
     const wsMessage = {
@@ -203,8 +203,8 @@ export const Chat = () => {
           retryCount++;
 
           // Retry and capture the result
-          if(webSocketModeRef?.current) {
-             // Wait for retry delay
+          if (webSocketModeRef?.current) {
+            // Wait for retry delay
             await new Promise((res) => setTimeout(res, retryDelay));
             console.log(`Retrying connection... Attempt ${retryCount}`);
             const success = await connectWebSocket(retryCount);
@@ -256,7 +256,7 @@ export const Chat = () => {
 
     // stop loading after receiving a message
     homeDispatch({ field: 'loading', value: false });
-    if(message?.status === 'complete') {
+    if (message?.status === 'complete') {
       // stop streaming status after receiving a message with status completed -> END
       // to show the message on UI and scroll to the bottom after 500ms delay
       setTimeout(() => {
@@ -265,9 +265,9 @@ export const Chat = () => {
     }
 
     // handling human in the loop messages
-    if(message?.type === webSocketMessageTypes.systemInteractionMessage) {
+    if (message?.type === webSocketMessageTypes.systemInteractionMessage) {
       // Check for OAuth consent message and automatically open OAuth URL directly
-      if(message?.content?.input_type === 'oauth_consent') {
+      if (message?.content?.input_type === 'oauth_consent') {
         // Expect the OAuth URL to be directly in the message content
         const oauthUrl = message?.content?.oauth_url || message?.content?.redirect_url || message?.content?.text;
         if (oauthUrl) {
@@ -298,13 +298,13 @@ export const Chat = () => {
       openModal(message)
     }
 
-    if(sessionStorage.getItem('enableIntermediateSteps') === 'false' && message?.type === webSocketMessageTypes.systemIntermediateMessage) {
+    if (sessionStorage.getItem('enableIntermediateSteps') === 'false' && message?.type === webSocketMessageTypes.systemIntermediateMessage) {
       console.log('ignoring intermediate steps');
       return
     }
 
     // handle error messages
-    if(message?.type === 'error') {
+    if (message?.type === 'error') {
       message.content.text = 'Something went wrong. Please try again. \n\n' + `<details id=${message?.id}><summary></summary>${JSON.stringify(message?.content)}</details>`
       // to show the message on UI and scroll to the bottom after 500ms delay
       setTimeout(() => {
@@ -316,39 +316,39 @@ export const Chat = () => {
     let updatedMessages
     let selectedConversation = window.sessionStorage.getItem('selectedConversation')
     selectedConversation = JSON.parse(selectedConversation ?? '{}')
-    let conversations = JSON.parse(window.sessionStorage.getItem('conversationsHistory')?? '[]')
+    let conversations = JSON.parse(window.sessionStorage.getItem('conversationsHistory') ?? '[]')
 
     // logic
     // if this is the first message (of the assistant response to user message), then add the message to the conversation as 'assistant' message
     // else append the message to the exisiting assistant message (part of the stream appending)
     // look through the conversation messages and find if a assistant message has id = parentId
     const isLastMessageFromAssistant = selectedConversation?.messages[selectedConversation?.messages?.length - 1].role === 'assistant'
-    if(isLastMessageFromAssistant) {
+    if (isLastMessageFromAssistant) {
       // console.log('found assistant message, appending to it')
       // update the assistant message inside selectedConversation
       updatedMessages = selectedConversation?.messages?.map((msg, idx) => {
         if (msg.role === 'assistant' && idx === selectedConversation?.messages?.length - 1) {
           // do this only for response token
           let updatedContent = msg.content || '';
-          if(message?.type === webSocketMessageTypes.systemResponseMessage) {
+          if (message?.type === webSocketMessageTypes.systemResponseMessage) {
             updatedContent = updatedContent + (message?.content?.text || '');
           }
 
           // find index for new message
           // it can be the length of the intermediate messages last one
           let index = msg?.intermediateSteps?.length || 0;
-          message = {...message, index}
+          message = { ...message, index }
 
           // process IntermediateSteps
           let processedIntermediateSteps = (message?.type === webSocketMessageTypes.systemIntermediateMessage)
             ? processIntermediateMessage(msg.intermediateSteps || [], message, sessionStorage.getItem('intermediateStepOverride') === 'false' ? false : intermediateStepOverride)
             : msg.intermediateSteps || [];
 
-          if(message?.type === webSocketMessageTypes.systemInteractionMessage){
+          if (message?.type === webSocketMessageTypes.systemInteractionMessage) {
             msg.humanInteractionMessages = msg.humanInteractionMessages || [];
             msg.humanInteractionMessages.push(message);
           }
-          if(message?.type === 'error') {
+          if (message?.type === 'error') {
             msg.errorMessages = msg.errorMessages || [];
             msg.errorMessages.push(message);
           }
@@ -374,7 +374,7 @@ export const Chat = () => {
           id: message?.id,
           parentId: message?.parent_id,
           content: message?.content?.text || '',
-          intermediateSteps: (message?.type === webSocketMessageTypes.systemIntermediateMessage) ? [{...message, index: 0}] : [],
+          intermediateSteps: (message?.type === webSocketMessageTypes.systemIntermediateMessage) ? [{ ...message, index: 0 }] : [],
           humanInteractionMessages: (message?.type === webSocketMessageTypes.systemInteractionMessage) ? [message] : [],
           errorMessages: message?.type === 'error' ? [message] : []
         },
@@ -494,20 +494,20 @@ export const Chat = () => {
           saveConversations(updatedConversations);
 
           let chatMessages
-          if(chatHistory) {
+          if (chatHistory) {
             chatMessages = updatedConversation?.messages?.map((message: Message) => {
               return {
                 role: message.role,
-                content : [
+                content: [
                   {
                     type: 'text',
                     text: message?.content?.trim() || ''
                   },
                   ...(message?.content?.attachments?.length > 0
                     ? message?.content?.attachments?.map(attachment => ({
-                        type: 'image',
-                        image_url: attachment?.content
-                      }))
+                      type: 'image',
+                      image_url: attachment?.content
+                    }))
                     : [])
                 ]
               };
@@ -555,12 +555,14 @@ export const Chat = () => {
           messages: chatHistory ? messagesCleaned : [{ role: 'user', content: message?.content }],
           chatCompletionURL: sessionStorage.getItem('chatCompletionURL') || chatCompletionURL,
           additionalProps: {
-            enableIntermediateSteps: sessionStorage.getItem('enableIntermediateSteps')
-            ? sessionStorage.getItem('enableIntermediateSteps') === 'true'
-            : enableIntermediateSteps,
+            enableIntermediateSteps: true
+
+            //   sessionStorage.getItem('enableIntermediateSteps')
+            // ? sessionStorage.getItem('enableIntermediateSteps') === 'true'
+            // : enableIntermediateSteps,
           }
         };
-
+        debugger
         const endpoint = getEndpoint({ service: 'chat' });
         let body;
         body = JSON.stringify({
@@ -667,7 +669,7 @@ export const Chat = () => {
                 // loop through rawIntermediateSteps and add them to the processedIntermediateSteps
                 let processedIntermediateSteps = []
                 rawIntermediateSteps.forEach((step) => {
-                  processedIntermediateSteps = processIntermediateMessage(processedIntermediateSteps, step, sessionStorage.getItem('intermediateStepOverride') === 'false' ? false : intermediateStepOverride )
+                  processedIntermediateSteps = processIntermediateMessage(processedIntermediateSteps, step, sessionStorage.getItem('intermediateStepOverride') === 'false' ? false : intermediateStepOverride)
                 })
 
                 // update the message
@@ -847,7 +849,7 @@ export const Chat = () => {
     };
   }, [chatContainerRef.current]); // Only re-run if the container ref changes
 
-// Now modify your handleScroll function to use this flag
+  // Now modify your handleScroll function to use this flag
   const handleScroll = useCallback(() => {
     if (!chatContainerRef.current || !isUserInitiatedScroll.current) return;
 
@@ -976,7 +978,7 @@ export const Chat = () => {
               handleSend(currentMessage, 0);
             } else {
               const lastUserMessage = fetchLastMessage(
-                {messages: selectedConversation?.messages, role: 'user'}
+                { messages: selectedConversation?.messages, role: 'user' }
               );
               lastUserMessage && handleSend(lastUserMessage, 1);
             }
