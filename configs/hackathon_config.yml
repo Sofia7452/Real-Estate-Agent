@@ -17,9 +17,9 @@ llms:
   # 默认使用Bailian API (用户可修改)
   default_llm:
     _type: openai
-    model_name: "claude-3-5-sonnet-20241022"
-    api_key: "sk-mySL5IVMDqvIzLO9gcZeFiHjWMAej8mSAVtjkuQQE87EZFIZ"
-    base_url: "https://yibuapi.com/v1/"
+    model_name: "deepseek-ai/DeepSeek-V3.1"
+    api_key: "sk-gmgvvnrcqbidtvdfqiqsxadrrgfwjwuialnrawzrohsihfby"
+    base_url: "https://api.siliconflow.cn/v1"
     temperature: 0.7
     max_tokens: 2048
 

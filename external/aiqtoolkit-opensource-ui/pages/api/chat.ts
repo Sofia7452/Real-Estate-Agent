@@ -12,16 +12,18 @@ export const config = {
 
 const handler = async (req: Request): Promise<Response> => {
 
-  console.log('handler-req', req);
 
   // extract the request body
+  const reqJson = await req.json()
+  console.log('handler-reqJson', reqJson);
+
   let {
     chatCompletionURL = '',
     messages = [],
     additionalProps = {
       enableIntermediateSteps: true
     }
-  } = (await req.json()) as ChatBody;
+  } = reqJson as ChatBody;
 
   try {
     let payload
@@ -179,7 +181,7 @@ const handler = async (req: Request): Promise<Response> => {
             console.log('aiq - stream reading error, closing stream', error);
             controller.close();
           } finally {
-            console.log('aiq - response processing is completed, closing stream');
+            console.log('aiq123 - response processing is completed, closing stream');
             controller.close();
             reader?.releaseLock();
           }

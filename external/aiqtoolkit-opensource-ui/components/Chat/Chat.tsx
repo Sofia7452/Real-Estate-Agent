@@ -555,11 +555,11 @@ export const Chat = () => {
           messages: chatHistory ? messagesCleaned : [{ role: 'user', content: message?.content }],
           chatCompletionURL: sessionStorage.getItem('chatCompletionURL') || chatCompletionURL,
           additionalProps: {
-            enableIntermediateSteps: true
-
-            //   sessionStorage.getItem('enableIntermediateSteps')
-            // ? sessionStorage.getItem('enableIntermediateSteps') === 'true'
-            // : enableIntermediateSteps,
+            enableIntermediateSteps:
+              // true
+              sessionStorage.getItem('enableIntermediateSteps')
+                ? sessionStorage.getItem('enableIntermediateSteps') === 'true'
+                : enableIntermediateSteps,
           }
         };
         debugger

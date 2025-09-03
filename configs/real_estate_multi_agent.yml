@@ -1,0 +1,56 @@
+general:
+  use_uvloop: true
+
+functions:
+  # 定义各个Agent作为function
+  property_researcher_agent:
+    _type: react_agent
+    tool_names:
+      - tavily_internet_search
+      - property_database_query
+    llm_name: analytical_llm
+    description: "房产调研专家，负责收集和分析房产信息"
+    max_iterations: 8
+
+  market_analyst_agent:
+    _type: reasoning_agent
+    tool_names:
+      - market_data_analysis
+      - investment_evaluator
+    llm_name: analytical_llm
+    description: "市场分析专家，负责趋势分析和投资建议"
+    max_iterations: 6
+
+  customer_service_agent:
+    _type: tool_calling_agent
+    tool_names:
+      - customer_database
+      - appointment_scheduler
+    llm_name: customer_llm
+    description: "客户服务专家，处理咨询和需求分析"
+    max_iterations: 5
+
+  # 工具配置
+  tavily_internet_search:
+    _type: tavily_internet_search
+    max_results: 5
+
+workflow:
+  # 协调Agent，使用其他Agent作为工具
+  _type: react_agent
+  tool_names:
+    - property_researcher_agent
+    - market_analyst_agent
+    - customer_service_agent
+  llm_name: default_llm
+  description: "房地产多Agent协调系统"
+  max_iterations: 12
+  verbose: true
+
+llms:
+  default_llm:
+    _type: openai
+    model_name: "deepseek-ai/DeepSeek-V3.1"
+    api_key: "sk-gmgvvnrcqbidtvdfqiqsxadrrgfwjwuialnrawzrohsihfby"
+    base_url: "https://api.siliconflow.cn/v1"
+    temperature: 0.7

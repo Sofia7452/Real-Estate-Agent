@@ -1,0 +1,46 @@
+# 房地产多智能体系统配置文件
+# 使用AIQToolkit框架整合三个智能体
+
+# 定义智能体函数
+functions:
+  - name: requirement_agent
+    type: python_function
+    config:
+      module_path: src.real_estate_agents.requirement_agent.agent
+      function_name: RequirementExtractionTool
+      description: "解析用户自然语言需求，提取结构化信息"
+      
+  - name: property_search
+    type: python_function
+    config:
+      module_path: src.real_estate_agents.property_agent.agent
+      function_name: search_properties
+      description: "根据结构化需求搜索匹配的房源"
+      
+  - name: property_recommend
+    type: python_function
+    config:
+      module_path: src.real_estate_agents.matching_agent.agent
+      function_name: recommend_properties
+      description: "计算房源与需求的匹配度并推荐最佳选择"
+
+# 定义工作流
+workflows:
+  - name: real_estate_recommendation
+    type: sequential
+    config:
+      description: "房地产推荐多智能体工作流"
+      steps:
+        - function_name: requirement_agent
+          input_key: query
+          output_key: structured_requirements
+          
+        - function_name: property_search
+          input_key: structured_requirements
+          output_key: property_results
+          
+        - function_name: property_recommend
+          input_key: 
+            properties: ${property_results.properties}
+            requirements: ${structured_requirements}
+          output_key: recommendations

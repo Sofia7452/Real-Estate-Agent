@@ -4,16 +4,16 @@ echo "🚀 启动 NVIDIA NeMo Agent Toolkit AI对话机器人"
 echo "=============================================="
 
 # 设置环境变量
-export TAVILY_API_KEY=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
+export TAVILY_API_KEY=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
 
 # 激活Python虚拟环境
 source .venv/bin/activate
 
 # 启动后端服务
 echo "📡 启动后端服务..."
-aiq serve --config_file configs/hackathon_config.yml --host 0.0.0.0 --port 8001 &
-BACKEND_PID=$!
 
+aiq serve --config_file configs/real_estate_multi_agent.yml --host 0.0.0.0 --port 8001 &
+BACKEND_PID=$!
 # 等待后端启动
 echo "⏳ 等待后端服务启动..."
 sleep 10
