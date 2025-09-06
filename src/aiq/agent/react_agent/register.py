@@ -83,6 +83,7 @@ async def react_agent_workflow(config: ReActAgentWorkflowConfig, builder: Builde
     from aiq.agent.react_agent.agent import ReActGraphState
     from aiq.agent.react_agent.agent import create_react_agent_prompt
 
+    logger.info(f"[test666] react_agent_workflow config: {config}")
     prompt = create_react_agent_prompt(config)
 
     # we can choose an LLM for the ReAct agent in the config file
@@ -90,6 +91,7 @@ async def react_agent_workflow(config: ReActAgentWorkflowConfig, builder: Builde
     # the agent can run any installed tool, simply install the tool and add it to the config file
     # the sample tool provided can easily be copied or changed
     tools = builder.get_tools(tool_names=config.tool_names, wrapper_type=LLMFrameworkEnum.LANGCHAIN)
+    logger.info(f"[test666] 22tools: {tools}")
     if not tools:
         raise ValueError(f"No tools specified for ReAct Agent '{config.llm_name}'")
     # configure callbacks, for sending intermediate steps

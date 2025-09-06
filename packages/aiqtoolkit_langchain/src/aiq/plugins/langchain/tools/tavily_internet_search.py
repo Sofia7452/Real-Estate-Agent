@@ -17,7 +17,8 @@ from aiq.builder.builder import Builder
 from aiq.builder.function_info import FunctionInfo
 from aiq.cli.register_workflow import register_function
 from aiq.data_models.function import FunctionBaseConfig
-
+import logging
+logger = logging.getLogger(__name__)
 
 # Internet Search tool
 class TavilyInternetSearchToolConfig(FunctionBaseConfig, name="tavily_internet_search"):
@@ -44,6 +45,8 @@ async def tavily_internet_search(tool_config: TavilyInternetSearchToolConfig, bu
         # Search the web and get the requested amount of results
         tavily_search = TavilySearchResults(max_results=tool_config.max_results)
         search_docs = await tavily_search.ainvoke({'query': question})
+        logger.info(f"test777-search_docs: {search_docs}")
+            
         # Format
         web_search_results = "\n\n---\n\n".join(
             [f'<Document href="{doc["url"]}"/>\n{doc["content"]}\n</Document>' for doc in search_docs])

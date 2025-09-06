@@ -57,6 +57,7 @@ async def tool_calling_agent_workflow(config: ToolCallAgentWorkflowConfig, build
     # the agent can run any installed tool, simply install the tool and add it to the config file
     # the sample tools provided can easily be copied or changed
     tools = builder.get_tools(tool_names=config.tool_names, wrapper_type=LLMFrameworkEnum.LANGCHAIN)
+    logger.info(f"[test666] tools: {tools}")
     if not tools:
         raise ValueError(f"No tools specified for Tool Calling Agent '{config.llm_name}'")
 

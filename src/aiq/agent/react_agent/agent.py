@@ -139,6 +139,7 @@ class ReActAgentGraph(DualNodeAgent):
                     )
 
                     if self.detailed_logs:
+                        logger.info(f"[test666] 11self.detailed_logs: {question}")
                         logger.info(AGENT_CALL_LOG_MESSAGE, question, output_message.content)
                 else:
                     # ReAct Agents require agentic cycles
@@ -161,6 +162,7 @@ class ReActAgentGraph(DualNodeAgent):
                                                             RunnableConfig(callbacks=self.callbacks))
 
                     if self.detailed_logs:
+                        logger.info(f"[test666] self.detailed_logs: {question}")
                         logger.info(AGENT_CALL_LOG_MESSAGE, question, output_message.content)
                         logger.debug("%s The agent's scratchpad (with tool result) was:\n%s",
                                      AGENT_LOG_PREFIX,

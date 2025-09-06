@@ -98,6 +98,7 @@ class TavilyMCPServer:
             """调用工具"""
             try:
                 if name == "tavily_search":
+                    logger.info(f"[test666]call_tool: {name} with arguments: {arguments}")
                     return await self._tavily_search(arguments)
                 elif name == "tavily_weather_search":
                     return await self._tavily_weather_search(arguments)
